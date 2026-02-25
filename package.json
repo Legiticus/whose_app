@@ -1,0 +1,26 @@
+{
+  "name": "whose_app",
+  "version": "1.0.0",
+  "description": "A simple messaging application",
+  "homepage": "https://github.com/Legiticus/whose_app#readme",
+  "bugs": {
+    "url": "https://github.com/Legiticus/whose_app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Legiticus/whose_app.git"
+  },
+  "license": "ISC",
+  "author": "Levi Smith",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev -w gateway\" \"npm run dev -w services/auth-service\" \"npm run dev -w services/chat-service\" \"npm run dev -w client\""
+  },
+  "workspaces": [
+    "client",
+    "services/*",
+    "gateway"
+  ]
+}
