@@ -15,6 +15,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "dbservice": "npm run dev -w services/db-manager",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm run dev -w gateway\" \"npm run dev -w services/auth-service\" \"npm run dev -w services/chat-service\" \"npm run dev -w client\""
   },
