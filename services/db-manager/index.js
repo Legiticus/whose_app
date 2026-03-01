@@ -1,52 +1,29 @@
-require('dotenv').config();
 
-const express = require("express");
-const app = express();
-const mongoose = require('mongoose');
+import dotenv from 'dotenv'
+import {app, connectDB} from './app.js';
+
+dotenv.config();
 
 const PORT = process.env.PORT;
-
-//-----------------------------------------SCHEMAS-----------------------------------------//
-
-
-
-
-
-
-//-----------------------------------------ROUTING-----------------------------------------//
-const accountRoutes = require('./routes/accountRoutes');
-
-//Middleware
-app.use(express.json()); //This line binds the requests body to req.body
-app.use((req, res, next) => {
-	console.log(req.path, req.method);
-	next();
-});
-
-app.use('/api/accounts', accountRoutes);
-
-
 
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });
 
-//-----------------------------------------CONNECT TO DATABASE -----------------------------------------//
-//-----------------------------------------   BEGIN LISTENER   -----------------------------------------//
-//Function for connecting to database
-const connectDB = async () => {
+
+
+//Connect to database
+async function startServer() {
 	try {
-		const conn = await mongoose.connect(process.env.DB_URI);
-		console.log(`MongoDB connected: ${conn.connect.host}`);
+		await connectDB(process.env.DB_URI);
+		console.log('Connected to database')
 		app.listen(PORT, () => {
 			console.log(`Server running on port ${PORT}`);
-		});
+		});	
 	}catch (error) {
 		console.error('Failed to connect to MongoDB: ', error.message);
 		process.exit(1); //Exits the process with failure
 	}
-};
 
-//Connect to database
-connectDB();
+}

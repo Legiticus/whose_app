@@ -16,12 +16,21 @@
   "main": "index.js",
   "scripts": {
     "dbservice": "npm run dev -w services/db-manager",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "frontend": "npm run start -w client",
+    "test": "jest",
     "dev": "concurrently \"npm run dev -w gateway\" \"npm run dev -w services/auth-service\" \"npm run dev -w services/chat-service\" \"npm run dev -w client\""
   },
   "workspaces": [
     "client",
     "services/*",
     "gateway"
-  ]
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
+    "@shelf/jest-mongodb": "^6.0.2",
+    "babel-jest": "^30.2.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  }
 }

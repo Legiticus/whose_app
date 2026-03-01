@@ -1,5 +1,7 @@
 const express = require("express");
 
+const User = require('../models/User');
+
 const router = express.Router();
 
 //GET all accounts
@@ -13,8 +15,22 @@ router.get('/:username', (req, res) => {
 })
 
 //POST a new account
-router.post('/', (req, res) => {
-	res.json({mssg: 'POST a new account'});
+router.post('/', async (req, res) => {
+	const {username, password, lastName, firstName, image, profileSetup} = req.body;
+
+	try {
+		const user = await User.create({
+			username,
+			password,
+			lastName,
+			firstName,
+			image,
+			profileSetup
+		});
+		res.status(200).json(user);
+	}catch (error) {
+		res.status(400).json({error: error.message});
+	}
 })
 
 //DELETE an existing account
