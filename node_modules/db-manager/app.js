@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 const app = express();
 
 //-----------------------------------------ROUTING-----------------------------------------//
-const accountRoutes = require('./routes/accountRoutes');
+import accountRoutes from './routes/accountRoutes';
 
 //Middleware
 app.use(express.json()); //This line binds the requests body to req.body
