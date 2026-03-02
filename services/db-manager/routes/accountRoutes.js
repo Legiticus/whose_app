@@ -1,6 +1,6 @@
 import express from "express";
 
-import User from '../models/User';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -43,4 +43,4 @@ router.put('/:username', (req, res) => {
 	res.json({mssg: 'PUT an existing account'});
 })
 
-module.exports = router;
+export default router;
