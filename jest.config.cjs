@@ -20,6 +20,7 @@ const config = {
   ],
 
 
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -33,7 +34,7 @@ const config = {
   collectCoverage: true,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  coverageDirectory: "coverage"
 };
 
 module.exports = config;

@@ -10,15 +10,25 @@ router.get('/', (req, res) => {
 });
 
 //GET single account
-router.get('/:username', (req, res) => {
+router.get('/', (req, res) => {
 	res.json({mssg: 'GET single account'})
 })
 
 //POST a new account
 router.post('/', async (req, res) => {
-	const {email, password, lastName, firstName, image, profileSetup} = req.body;
 
 	try {
+
+		const {email, password, lastName, firstName, image, profileSetup} = req.body;
+
+		if (!email || !password ) {
+			return res.status(400).json({message: "Email and password required"});
+		}
+
+		if (await User.findOne({email})) {
+			return res.status(400).json({message: "Email already registered"});
+		}
+
 		const user = await User.create({
 			email,
 			password,
@@ -27,19 +37,22 @@ router.post('/', async (req, res) => {
 			image,
 			profileSetup
 		});
-		res.status(200).json(user);
+
+		res.status(201).json({message: "User registered successfully", user});
+
 	}catch (error) {
-		res.status(400).json({error: error.message});
+		console.error('Signup Error:', error);
+		res.status(400).json({message: 'Internal Server Error'});
 	}
 })
 
 //DELETE an existing account
-router.post('/:username', (req, res) => {
+router.post('/', (req, res) => {
 	res.json({mssg: 'POST a new account'});
 })
 
 //PUT an exitsting account
-router.put('/:username', (req, res) => {
+router.put('/', (req, res) => {
 	res.json({mssg: 'PUT an existing account'});
 })
 

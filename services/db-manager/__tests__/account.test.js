@@ -1,6 +1,7 @@
 import {app, connectDB } from '../app.js';
 import User from '../models/User.js';
 import request from 'supertest';
+import mongoose from 'mongoose';
 
 /**
  * We rely on @shelf/jest-mongodb to supply process.env.MONGO_URL,
@@ -17,7 +18,16 @@ import request from 'supertest';
  * DELETE - deletes the user profile
  **/
 
-describe('POST /api/account', () => {
+describe('GET /api/accounts', () => {
+
+	//connect to vitual database and proc getable users
+	beforeAll(async () => {
+		await connectDB(process.env.MONGO_URL);
+	});
+
+});
+
+describe('POST /api/accounts', () => {
 	//connect to virtual database
 	//the instance is provided through process.env.MONGO_URL
 	beforeAll(async () => {
@@ -43,10 +53,58 @@ describe('POST /api/account', () => {
 	it('should create a valid user entry in the database and return 201', async () => {
 
 		//use supertest to POST
-		const res = (await request().post('api/accounts')).send({email: 'test@test.com', password: '12345'});
+		const res = await request(app).post('/api/accounts').send({email: 'test@test.com', password: '12345'});
 
 		expect(res.status).toBe(201);
 		expect(res.body.message).toBe('User registered successfully');
+
+		//Check that the user has been successfully stored in the database
+		const userInDb = await User.findOne({email: "test@test.com"});
+		expect(userInDb).not.toBeNull();
+	});
+
+	/**
+	 * Test 2:
+	 * Request with insufficient input (email or password missing)
+	 * results in return code of 400
+	 */
+	it('should return 400 if insufficient data (email or password missing)', async () => {
+
+		//MISSING EMAIL
+		//use supertest to POST
+		let res = await request(app).post('/api/accounts').send({email: 'test@test.com'});
+
+		//Checking for expected values
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Email and password required');
+
+		//MISSING PASSWORD
+		//use supertest to POST
+		res = await request(app).post('/api/accounts').send({password: 'samplepass'});
+
+		//Checking for expected values
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Email and password required');
+		
+	});
+
+	/**
+	 * Test 3:
+	 * Request that attempt to register a new account with an email already
+	 * registered in the system return 400
+	 */
+	it('should return 400 if email already registed in system', async () => {
+
+		//manually create account
+		await User.create({email: 'test@test.com', password: 'password'});
+
+		//Attempt to sign up with the same email
+		const res = await request(app).post('/api/accounts').send({email: 'test@test.com', password: 'betterPassword'});
+
+		//check values
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Email already registered');
+
 	});
 
 });
