@@ -12,7 +12,7 @@
   },
   "license": "ISC",
   "author": "Levi Smith",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dbservice": "npm run dev -w services/db-manager",

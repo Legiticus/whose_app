@@ -16,11 +16,11 @@ router.get('/:username', (req, res) => {
 
 //POST a new account
 router.post('/', async (req, res) => {
-	const {username, password, lastName, firstName, image, profileSetup} = req.body;
+	const {email, password, lastName, firstName, image, profileSetup} = req.body;
 
 	try {
 		const user = await User.create({
-			username,
+			email,
 			password,
 			lastName,
 			firstName,
