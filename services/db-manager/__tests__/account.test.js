@@ -21,9 +21,6 @@ import mongoose from 'mongoose';
 describe('GET /api/accounts', () => {
 
 	//connect to vitual database and proc getable users
-	beforeAll(async () => {
-		await connectDB(process.env.MONGO_URL);
-	});
 
 });
 
@@ -102,7 +99,7 @@ describe('POST /api/accounts', () => {
 		const res = await request(app).post('/api/accounts').send({email: 'test@test.com', password: 'betterPassword'});
 
 		//check values
-		expect(res.status).toBe(400);
+		expect(res.status).toBe(409);
 		expect(res.body.message).toBe('Email already registered');
 
 	});

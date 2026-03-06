@@ -11,7 +11,7 @@ const config = {
   transform: {
     "^.+\\.(js|jsx)$": "babel-jest",
   },
-  verbose: true,
+  verbose: false,
 
   //Checks the following workspaces
   projects: [
