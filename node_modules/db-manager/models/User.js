@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
 	lastName: String,
 	firstName: String,
 	image: String,
-	profileSetup: {type: Boolean, default: false}
+	profileSetup: {type: Boolean, default: false},
+	color: String
 
 }, {timestamps: true});
 
