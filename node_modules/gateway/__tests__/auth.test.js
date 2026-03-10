@@ -30,7 +30,7 @@ describe('POST /api/auth/signup', () => {
 		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
 
 		expect(res.status).toBe(201);
-		expect(res.body.message).toBe({
+		expect(res.body.user).toBe({
 			'id': '1',
 			'email': 'test@test.com',
 			"firstName": "",

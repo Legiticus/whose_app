@@ -19,7 +19,7 @@ import mongoose from 'mongoose';
  **/
 
 
-describe('POST /api/accounts/signup', () => {
+describe('POST /api/auth/signup', () => {
 	//connect to virtual database
 	//the instance is provided through process.env.MONGO_URL
 	beforeAll(async () => {
@@ -45,7 +45,7 @@ describe('POST /api/accounts/signup', () => {
 	it('should create a valid user entry in the database and return 201', async () => {
 
 		//use supertest to POST
-		const res = await request(app).post('/api/accounts').send({email: 'test@test.com', password: '12345'});
+		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: '12345'});
 
 		expect(res.status).toBe(201);
 		expect(res.body.message).toBe('User registered successfully');
@@ -64,7 +64,7 @@ describe('POST /api/accounts/signup', () => {
 
 		//MISSING EMAIL
 		//use supertest to POST
-		let res = await request(app).post('/api/accounts').send({email: 'test@test.com'});
+		let res = await request(app).post('/api/auth/signup').send({email: 'test@test.com'});
 
 		//Checking for expected values
 		expect(res.status).toBe(400);
@@ -72,7 +72,7 @@ describe('POST /api/accounts/signup', () => {
 
 		//MISSING PASSWORD
 		//use supertest to POST
-		res = await request(app).post('/api/accounts').send({password: 'samplepass'});
+		res = await request(app).post('/api/auth/signup').send({password: 'samplepass'});
 
 		//Checking for expected values
 		expect(res.status).toBe(400);
@@ -91,7 +91,7 @@ describe('POST /api/accounts/signup', () => {
 		await User.create({email: 'test@test.com', password: 'password'});
 
 		//Attempt to sign up with the same email
-		const res = await request(app).post('/api/accounts').send({email: 'test@test.com', password: 'betterPassword'});
+		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'betterPassword'});
 
 		//check values
 		expect(res.status).toBe(409);

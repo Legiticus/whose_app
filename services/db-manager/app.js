@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 const app = express();
 
 //-----------------------------------------ROUTING-----------------------------------------//
-import accountRoutes from './routes/accountRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 //Middleware
 app.use(express.json()); //This line binds the requests body to req.body
@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use('/api/accounts', accountRoutes);
+app.use('/api/auth', authRoutes);
 
 //-----------------------------------------CONNECT TO DATABASE -----------------------------------------//
 //-----------------------------------------   BEGIN LISTENER   -----------------------------------------//
