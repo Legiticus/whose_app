@@ -18,13 +18,8 @@ import mongoose from 'mongoose';
  * DELETE - deletes the user profile
  **/
 
-describe('GET /api/accounts', () => {
 
-	//connect to vitual database and proc getable users
-
-});
-
-describe('POST /api/accounts', () => {
+describe('POST /api/accounts/signup', () => {
 	//connect to virtual database
 	//the instance is provided through process.env.MONGO_URL
 	beforeAll(async () => {

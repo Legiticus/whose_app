@@ -31,8 +31,8 @@ describe('POST /api/auth/signup', () => {
 
 		expect(res.status).toBe(201);
 		expect(res.body.message).toBe({
+			'id': '1',
 			'email': 'test@test.com',
-			'password': 'testpass',
 			"firstName": "",
 			"lastName": "",
 			"image": "",

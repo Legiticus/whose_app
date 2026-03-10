@@ -4,18 +4,8 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-//GET all accounts
-router.get('/', (req, res) => {
-	res.json({mssg: 'GET all accounts'});
-});
-
-//GET single account
-router.get('/', (req, res) => {
-	res.json({mssg: 'GET single account'})
-})
-
-//POST a new account
-router.post('/', async (req, res) => {
+//SIGNUP
+router.post('/signup', async (req, res) => {
 
 	try {
 
@@ -38,22 +28,26 @@ router.post('/', async (req, res) => {
 			profileSetup
 		});
 
-		res.status(201).json({message: "User registered successfully", user});
+		const resBody = {
+			id: user._id,
+			password: user.password,
+			lastName: user.lastName,
+			firstName: user.firstName,
+			image: user.image,
+			profileSetup: user.profileSetup
+		}
+
+		res.status(201).json({user: {resBody}});
 
 	}catch (error) {
 		console.error('Signup Error:', error);
-		res.status(400).json({message: 'Internal Server Error'});
+		res.status(500).json({message: 'Internal Server Error'});
 	}
 })
 
-//DELETE an existing account
-router.post('/', (req, res) => {
-	res.json({mssg: 'POST a new account'});
-})
+//LOGIN
+router.post('/login', async () => {
 
-//PUT an exitsting account
-router.put('/', (req, res) => {
-	res.json({mssg: 'PUT an existing account'});
-})
+});
 
 export default router;
