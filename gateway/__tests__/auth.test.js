@@ -12,10 +12,11 @@ import request from 'supertest';
  * Authentication requests ('/api/auth') to test include the following
  * POST	('/signup')			- Creates a new user
  * POST ('/login')			- Logs a user in and creates a user object
- * POST ('logout')			- Logs the user out
- * GET  ('userinfo')		- Gets the user info
- * POST ('update-profile')	- Updates the user profile
+ * POST ('/logout')			- Logs the user out
+ * GET  ('/userinfo')		- Gets the user info
+ * POST ('/update-profile')	- Updates the user profile
  */
+
 
 describe('POST /api/auth/signup', () => {
 	
@@ -85,3 +86,30 @@ describe('POST /api/auth/signup', () => {
 	});
 			
 });
+
+
+describe('POST /login', () => {
+
+	it('should return 200 for successful login', async () => {
+
+	});
+
+	it('should return 200 for successful login', async () => {
+
+	});
+
+	it('should return 200 for successful login', async () => {
+
+	});
+
+	it('should return 200 for successful login', async () => {
+
+	});
+
+});
+
+describe('POST /logout', () => {});
+
+describe('GET /userprofile', () => {});
+
+describe('POST /update-profile', () => {});

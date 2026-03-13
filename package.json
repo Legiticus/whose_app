@@ -15,7 +15,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dbservice": "npm run dev -w services/db-manager",
+    "dbservice": "npm run dev -w ./services/db-manager",
+    "gateway": "npm run dev -w ./gateway",
     "frontend": "npm run start -w client",
     "test": "jest",
     "dev": "concurrently \"npm run dev -w gateway\" \"npm run dev -w services/auth-service\" \"npm run dev -w services/chat-service\" \"npm run dev -w client\""
