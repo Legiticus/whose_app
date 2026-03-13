@@ -7,6 +7,7 @@
 
 import app from '../app.js';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 
 /**
  * Authentication requests ('/api/auth') to test include the following
@@ -31,8 +32,8 @@ describe('POST /api/auth/signup', () => {
 		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
 
 		expect(res.status).toBe(201);
-		expect(res.body.user).toBe({
-			'id': '1',
+		expect(res.body.user).toEqual({
+			'id': expect.any(String),
 			'email': 'test@test.com',
 			"firstName": "",
 			"lastName": "",
@@ -156,7 +157,7 @@ describe('POST /api/auth/login', () => {
 
 describe('POST /api/auth/logout', () => {
 
-	it('should return 200 for successful login', async () => {
+	it('should return 200 for successful logout', async () => {
 
 		//UID sent via JWT token
 		const res = await request(app).post('/api/auth/logout');
@@ -174,42 +175,91 @@ describe('POST /api/auth/logout', () => {
 
 });
 
-describe('GET /api/auth/userprofile', () => {
+describe('GET /api/auth/userinfo', () => {
 
-	it('should return 200 for successful login', async () => {
+	it('should return 200 with data for data found and retrieved', async () => {
+
+		//stage user in database
+		const stageRes = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
+		expect(stageRes.status).toBe(201);
+
+		//create and attach token
+		const payload = {userId: stageRes.body.user.id};
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
+
+		const res = (await request(app).get('/api/auth/userinfo')).setEncoding('Authorization', `Bearer: ${token}`);
+
+		expect(res.status).toBe(200);
+		expect(res.body).toEqual({
+			'id': expect.any(String),
+			'email': 'test@test.com',
+			"firstName": "",
+			"lastName": "",
+			"image": "",
+			"profileSetup": false
+		});
 
 	});
 
-	it('should return 400 if email or password are missing', async () => {
+	it('should return 404 if user id not in token or user does not exist in database', async () => {
+
+		let res = await request(app).get('/api/auth/userinfo');
+		expect(res.status).toBe(404);
+		expect(res.body).toBe('UserID not in token');
+
+
+
+		//create and attach token
+		const payload = {userId: '1234'}; // bad user id
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
+
+		res = (await request(app).get('/api/auth/userinfo')).setEncoding('Authorization', `Bearer: ${token}`);
+
+		expect(res.status).toBe(404);
+		expect(res.body).toBe('User not in database');
 
 	});
 
-	it('should return 404 if no user found with given email', async () => {
-
-	});
-
+	/*
 	it('should return 500 for internal server error', async () => {
 
 	});
+	*/
 
 });
 
 describe('POST /api/auth/update-profile', () => {
 
-	it('should return 200 for successful login', async () => {
+	let authCookie;
+
+	beforeEach(async () => {
+
+		//stage user in database
+		const stageRes = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
+
+		authCookie = res.headers['set-cookie'];
+
+		//TESTING DESIGN PAUSED HERE UNITL LATER DATE DUE TO DATABASE INTERACTION COMPLEXITIES
 
 	});
 
-	it('should return 400 if email or password are missing', async () => {
+	afterEach(async () => {
 
 	});
 
-	it('should return 404 if no user found with given email', async () => {
+	it('should return 200 for successful profile update', async () => {
+		
 
 	});
 
+	it('should return 400 if missing userId in token or required fields', async () => {
+
+	});
+
+	/*
 	it('should return 500 for internal server error', async () => {
 
 	});
+	*/
 
 });

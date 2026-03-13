@@ -22,7 +22,7 @@ function verifyToken(req, res, next) {
 		const token = req.cookies.jwt;
   		if (!token) return res.status(401).json({ message: "Not authenticated" });
 
-		jwt.verify(token, process.env.SECRET_KEY, (err, payload) => {
+		jwt.verify(token, process.env.SECRET_KEY || 'Testkey', (err, payload) => {
 			if (err) {
 				console.log("Token Error: invalid or expired token");
 				return res.status(403).json({ message: "Invalid or expired token" });
@@ -64,7 +64,7 @@ router.post('/signup', async (req, res) => {
 		const response = await axios.post(dbURL, postBody);
 
 		if (res.status == 201) {
-			const token = jwt.sign({email, userId: response.id}, process.env.SECRET_KEY, {expiresIn: "1h"});
+			const token = jwt.sign({email, userId: response.id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
 		}
 
 		res.cookie("jwt", token, {
@@ -103,7 +103,7 @@ router.post('/login', async (req, res) => {
 		const response = await axios.post(dbURL, postBody);
 
 		if (res.status == 201) {
-			const token = jwt.sign({email, userId: response.id}, process.env.SECRET_KEY, {expiresIn: "1h"});
+			const token = jwt.sign({email, userId: response.id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
 		}
 
 		res.cookie("jwt", token, {
