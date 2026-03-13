@@ -29,7 +29,7 @@ router.post('/signup', async (req, res) => {
 			message: 'User registered successfully',
 			user: {
 				id: user._id,
-				password: user.password,
+				email: user.email,
 				lastName: user.lastName,
 				firstName: user.firstName,
 				image: user.image,
@@ -73,7 +73,7 @@ router.post('/login', async (req, res) => {
 			message: 'User registered successfully',
 			user: {
 				id: user._id,
-				password: user.password,
+				email: user.email,
 				lastName: user.lastName,
 				firstName: user.firstName,
 				image: user.image,

@@ -88,28 +88,128 @@ describe('POST /api/auth/signup', () => {
 });
 
 
-describe('POST /login', () => {
+describe('POST /api/auth/login', () => {
+
+	it('should return 200 and user object for successful login', async () => {
+
+		//stage user in database
+		const stageRes = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
+		expect(stageRes.status).toBe(201);
+
+		const res = await request(app).post('/api/auth/login').send({email: 'test@test.com', password: 'testpass'});
+
+		expect(res.status).toBe(200);
+		expect(res.body.user).toEqual({
+			'id': expect.any(String),
+			'email': 'test@test.com',
+			"firstName": "",
+			"lastName": "",
+			"image": "",
+			"profileSetup": false
+		});
+	
+	});
+
+	it('should return 400 if email or password are missing', async () => {
+
+		//stage user in database
+		const stageRes = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'testpass'});
+		expect(stageRes.status).toBe(201);
+
+		//missing password
+		let res = await request(app).post('/api/auth/login').send({email: 'test@test.com'});
+
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Missing password or email or invalid password');
+
+		//missing password
+		res = await request(app).post('/api/auth/login').send({password: 'testpass'});
+
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Missing password or email or invalid password');
+
+		//invalid password
+		res = await request(app).post('/api/auth/login').send({email: 'test@test.com', password: 'badpass'});
+
+		expect(res.status).toBe(400);
+		expect(res.body.message).toBe('Missing password or email or invalid password');
+
+	});
+
+	it('should return 404 if no user found with given email', async () => {
+
+		//request for non=existing user
+		const res = await request(app).post('/api/auth/login').send({email: 'test@test.com', password: 'testpass'});
+
+		expect(res.status).toBe(404);
+		expect(res.body.message).toBe('No user found with given email');
+
+	});
+
+	/*
+	it('should return 500 for internal server error', async () => {
+
+	});
+	*/
+
+});
+
+describe('POST /api/auth/logout', () => {
+
+	it('should return 200 for successful login', async () => {
+
+		//UID sent via JWT token
+		const res = await request(app).post('/api/auth/logout');
+
+		expect(res.status).toBe(200);
+		expect(res.body.message).toBe('Logout successful');
+
+	});
+
+	/*
+	it('should return 500 for internal server error', async () => {
+
+	});
+	*/
+
+});
+
+describe('GET /api/auth/userprofile', () => {
 
 	it('should return 200 for successful login', async () => {
 
 	});
 
-	it('should return 200 for successful login', async () => {
+	it('should return 400 if email or password are missing', async () => {
 
 	});
 
-	it('should return 200 for successful login', async () => {
+	it('should return 404 if no user found with given email', async () => {
 
 	});
 
-	it('should return 200 for successful login', async () => {
+	it('should return 500 for internal server error', async () => {
 
 	});
 
 });
 
-describe('POST /logout', () => {});
+describe('POST /api/auth/update-profile', () => {
 
-describe('GET /userprofile', () => {});
+	it('should return 200 for successful login', async () => {
 
-describe('POST /update-profile', () => {});
+	});
+
+	it('should return 400 if email or password are missing', async () => {
+
+	});
+
+	it('should return 404 if no user found with given email', async () => {
+
+	});
+
+	it('should return 500 for internal server error', async () => {
+
+	});
+
+});

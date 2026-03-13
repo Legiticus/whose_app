@@ -48,7 +48,14 @@ describe('POST /api/auth/signup', () => {
 		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: '12345'});
 
 		expect(res.status).toBe(201);
-		expect(res.body.message).toBe('User registered successfully');
+		expect(res.body).toEqual({
+			message: 'User registered successfully',
+			user: {
+				id: expect.any(String),
+				email: 'test@test.com',
+				profileSetup: false
+			}
+		});
 
 		//Check that the user has been successfully stored in the database
 		const userInDb = await User.findOne({email: "test@test.com"});
