@@ -1,13 +1,35 @@
+/**
+ * @file authRoutes.js
+ * @author Levi Smith
+ * 
+ * discribes the authentiction routes for the database manager
+ */
+
 import express from "express";
+import bcrypt from 'bcrypt';
 
 import User from '../models/User.js';
 
 const router = express.Router();
 
+
+/**
+ * Account requests ('/api/account') to test include the following
+ * GET - gets user profile data
+ * POST - creates a new user profile
+ * PUT - updates the entire user profile
+ * DELETE - deletes the user profile
+ **/
+
+
 //SIGNUP
 router.post('/signup', async (req, res) => {
 
 	try {
+
+		if (req.body == undefined) {
+			return res.status(400).json({message: "Email and password required"});
+		}
 
 		const {email, password} = req.body;
 
@@ -65,12 +87,14 @@ router.post('/login', async (req, res) => {
 			return res.status(404).json({message: "No user found with the given email"});
 		}
 
-		if (user.password != password) {
+		const validPass = await bcrypt.compare(password, user.password);
+
+		if (!validPass) {
 			return res.status(400).json({message: "Invalid password"});
 		}
 
 		const resBody = {
-			message: 'User registered successfully',
+			message: 'User login successful',
 			user: {
 				id: user._id,
 				email: user.email,
@@ -82,11 +106,11 @@ router.post('/login', async (req, res) => {
 			}
 		}
 
-		res.status(201).json(resBody);
+		res.status(200).json(resBody);
 	
 
 	}catch (error) {
-		console.error('Signup Error:', error);
+		console.error('Login Error:', error);
 		res.status(500).json({message: 'Internal Server Error'});
 	}
 
@@ -96,14 +120,16 @@ router.post('/login', async (req, res) => {
 router.get('/userinfo', async (req, res) => {
 	try {
 
+		const { userId } = req.params;
+
 		//Check if userId is in the body
-		if (req.body.userId == null) {
+		if (!userId) {
 			console.log('Get Info Error: UserID not in request body');
 			return res.status(404).json({message: 'UserID not in request body'});
 		}
 
 		//find user
-		const user = User.findById(req.body.userId);
+		const user = User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not in database'});
 		}
@@ -131,13 +157,14 @@ router.post('/update-profile', async (req, res) => {
 
 		//Check if userId is in the body
 		if (req.body.userId == null) {
-			console.log('Get Info Error: UserID not in request body');
+			console.log('Update Info Error: UserID not in request body');
 			return res.status(404).json({message: 'UserID not in request body'});
 		}
 
 		//find user
 		const user = User.findById(req.userId);
 		if (!user) {
+			console.log('Update Info Error: User not in database');
 			return res.status(404).json({message: 'User not in database'});
 		}
 

@@ -1,3 +1,10 @@
+/**
+ * @file auth.test.js
+ * @author Levi Smith
+ * 
+ * tests the authentiction routes for the database manager
+ */
+
 import {app, connectDB } from '../app.js';
 import User from '../models/User.js';
 import request from 'supertest';
