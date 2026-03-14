@@ -6,12 +6,17 @@
  */
 
 import dotenv from 'dotenv';
-import app from './app.js';
+import app, {socketProxy} from './app.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8747;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
 	console.log(`API Gateway running on port ${PORT}`);
+});
+
+//Handle the WebSocket upgrade
+server.on('upgrade', (req, socket, head) => {
+    socketProxy.upgrade(req, socket, head);
 });

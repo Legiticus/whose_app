@@ -25,14 +25,15 @@ app.use((req, res, next) => {
 });
 
 //Defining proxy for socket.io
-const socketProxy = createProxyMiddleware({
+export const socketProxy = createProxyMiddleware({
 	target: 'http://localhost:4004',
 	changeOrigin: true,
 	ws: true,
+	pathFilter: '/socket.io',
 	logLevel: 'debug'
 });
 
-app.use('socket.io', socketProxy);
+app.use(socketProxy);
 
 //Route auth requests to authentication service
 app.use('/api/auth', createProxyMiddleware({
@@ -47,8 +48,8 @@ app.use('/api/contact', createProxyMiddleware({
 }));
 
 //Route message requests to message service
-app.use('/api/auth', createProxyMiddleware({
-	target: 'http://localhost:4004',
+app.use('/api/message', createProxyMiddleware({
+	target: 'http://localhost:4003',
 	changeOrigin: true
 }));
 
