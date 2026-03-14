@@ -11,21 +11,7 @@ const config = {
   transform: {
     "^.+\\.(js|jsx)$": "babel-jest",
   },
-  verbose: false,
-
-  //Checks the following workspaces
-  projects: [
-    './gateway',
-    './services/db-manager'
-  ],
-
-
-
-  // All imported modules in your tests should be mocked automatically
-  // automock: false,
-
-  // Stop running tests after `n` failures
-  // bail: 0,
+  verbose: true,
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,

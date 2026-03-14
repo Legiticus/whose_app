@@ -1,31 +1,27 @@
 {
-  "name": "whose_app",
+  "name": "whose_app_mono",
   "version": "1.0.0",
-  "description": "A simple messaging application",
-  "homepage": "https://github.com/Legiticus/whose_app#readme",
-  "bugs": {
-    "url": "https://github.com/Legiticus/whose_app/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Legiticus/whose_app.git"
-  },
-  "license": "ISC",
-  "author": "Levi Smith",
-  "type": "module",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "dbservice": "npm run dev -w ./services/db-manager",
-    "gateway": "npm run dev -w ./gateway",
-    "frontend": "npm run start -w client",
-    "test": "jest",
-    "dev": "concurrently \"npm run dev -w gateway\" \"npm run dev -w services/auth-service\" \"npm run dev -w services/chat-service\" \"npm run dev -w client\""
+    "dev": "node index.js",
+    "client": "cd ./client && npm start",
+    "test": "jest"
   },
-  "workspaces": [
-    "client",
-    "services/*",
-    "gateway"
-  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.2.3",
+    "socket.io": "^4.8.3"
+  },
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
