@@ -27,6 +27,7 @@ router.post('/search', async (req, res) => {
 	//Generate a regular expression for searching
 	const regex = new RegExp(req.body.searchTerm);
 
+	return res.status(200).json({message: 'Debug'});
 	const users = await User.find({
 		$or: [
 			{ email: { $regex: searchTerm, $options: 'i' } },
@@ -38,6 +39,7 @@ router.post('/search', async (req, res) => {
 	const resBody = {
 		contacts: []
 	};
+
 
 	//loop through results and push to contacts
 	users.forEach(user => {

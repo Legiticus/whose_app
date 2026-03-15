@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node index.js",
     "client": "cd ./client && npm start",
-    "test": "jest"
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "",
