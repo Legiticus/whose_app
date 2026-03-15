@@ -11,7 +11,7 @@ import cors from 'cors';
 
 //Route Imports
 import authRoutes from './routes/authRoutes.js';
-//import contactRoutes from './routes/contactRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 //import messageRoutes from './routes/messageRoutes.js';
 
 const app = express();
@@ -36,8 +36,7 @@ app.use((req, res, next) => {
 
 //-----------------------------------------ROUTING-----------------------------------------//
 app.use('/api/auth', authRoutes);
-
-
+app.use('/api/contacts', contactRoutes);
 
 //-----------------------------------------CONNECT TO DATABASE -----------------------------------------//
 //Function for connecting to database

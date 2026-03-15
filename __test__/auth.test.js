@@ -100,7 +100,7 @@ describe('POST /api/auth/signup', () => {
 	 * Request that attempt to register a new account with an email already
 	 * registered in the system return 400
 	 */
-	it('should return 400 if email already registed in system', async () => {
+	it('should return 409 if email already registed in system', async () => {
 
 		//manually create account
 		await User.create({email: 'test@test.com', password: 'password'});

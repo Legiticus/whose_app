@@ -55,64 +55,42 @@ describe('POST /api/contacts/search', () => {
 	it('should query the database for lisa and requrn the three valid contacts', async () => {
 
 		//use supertest to POST
-		const res = await request(app).post('/api/contacts/search').send({search: 'lisa'});
+		const res = await request(app).post('/api/contacts/search').send({searchTerm: 'lisa'});
 
-		expect(res.status).toBe(201);
+		expect(res.status).toBe(200);
 		expect(res.body).toEqual({
 			message: 'User registered successfully',
-			user: {
-				id: expect.any(String),
-				email: 'test@test.com',
-				profileSetup: false
-			}
+			contacts: [
+				{
+					_id: User.findOne({email: 'lisa@gmail.com'}),
+					firstName: 'Lisa',
+					lastName: 'June',
+					email: 'lisa@gmail.com'
+				},
+				{
+					_id: User.findOne({email: 'lisa2@gmail.com'}),
+					firstName: 'Lisa',
+					lastName: 'March',
+					email: 'lisa2@gmail.com'
+				},
+				{
+					_id: User.findOne({email: 'lisa3@gmail.com'}),
+					firstName: 'NotNamed',
+					lastName: 'Not',
+					email: 'lisa3@gmail.com'
+				}
+			]
 		});
 
-		//Check that the user has been successfully stored in the database
-		const userInDb = await User.findOne({email: "test@test.com"});
-		expect(userInDb).not.toBeNull();
 	});
 
-	/**
-	 * Test 2:
-	 * Request with insufficient input (email or password missing)
-	 * results in return code of 400
-	 */
-	it('should return 400 if insufficient data (email or password missing)', async () => {
+	it('should return 400 if insufficient data (search term missing)', async () => {
 
-		//MISSING EMAIL
 		//use supertest to POST
-		let res = await request(app).post('/api/auth/signup').send({email: 'test@test.com'});
+		const res = await request(app).post('/api/contacts/search');
 
-		//Checking for expected values
 		expect(res.status).toBe(400);
-		expect(res.body.message).toBe('Email and password required');
-
-		//MISSING PASSWORD
-		//use supertest to POST
-		res = await request(app).post('/api/auth/signup').send({password: 'samplepass'});
-
-		//Checking for expected values
-		expect(res.status).toBe(400);
-		expect(res.body.message).toBe('Email and password required');
-		
-	});
-
-	/**
-	 * Test 3:
-	 * Request that attempt to register a new account with an email already
-	 * registered in the system return 400
-	 */
-	it('should return 400 if email already registed in system', async () => {
-
-		//manually create account
-		await User.create({email: 'test@test.com', password: 'password'});
-
-		//Attempt to sign up with the same email
-		const res = await request(app).post('/api/auth/signup').send({email: 'test@test.com', password: 'betterPassword'});
-
-		//check values
-		expect(res.status).toBe(409);
-		expect(res.body.message).toBe('Email already registered');
+		expect(res.body.message).toBe('Missing search term');
 
 	});
 

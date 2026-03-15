@@ -18,6 +18,39 @@ const router = express.Router();
  * DELETE /delete-dm/:dmId - deleted the indicated DM
  **/
 
-router.post('/search', (req, res) => {
-	return non;
+router.post('/search', async (req, res) => {
+	
+	if (!req.body || !req.body.searchTerm) {
+		res.status(400).json({message: 'Missing search term'});
+	}
+
+	//Generate a regular expression for searching
+	const regex = new RegExp(req.body.searchTerm);
+
+	const users = await User.find({
+		$or: [
+			{ email: { $regex: searchTerm, $options: 'i' } },
+			{ firstName: { $regex: searchTerm, $options: 'i' } },
+			{ lastName: { $regex: searchTerm, $options: 'i' } }
+		]
+	});
+
+	const resBody = {
+		contacts: []
+	};
+
+	//loop through results and push to contacts
+	users.forEach(user => {
+		resBody.contacts.push({
+			id: user._id,
+			email: user.email,
+			lastName: user.lastName,
+			firstName: user.firstName
+		});
+	});
+
+	return res.status(200).json(resBody);
+
 });
+
+export default router;
