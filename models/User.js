@@ -4,11 +4,12 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
 	email: {type: String, required: true, unique: true},
 	password: {type: String, required: true},
-	lastName: String,
-	firstName: String,
-	image: String,
+	lastName: {type: String, default: ''},
+	firstName: {type: String, default: ''},
+	image: {type: String, default: ''},
 	profileSetup: {type: Boolean, default: false},
-	color: String
+	color: {type: String, default: ''},
+	lastMessageTime: {type: Date, default: Date.now}
 
 }, {timestamps: true});
 

@@ -39,7 +39,6 @@ export function verifyToken(req, res, next) {
 	try {
 		console.log('verifying requestors token');
 		const token = req.cookies.jwt;
-		console.log(token)
   		if (!token) {
 			console.log('token not found');
 			return res.status(401).json({ message: "Not authenticated" });
@@ -51,6 +50,7 @@ export function verifyToken(req, res, next) {
 				console.log("Token Error: invalid or expired token");
 				return res.status(403).json({ message: "Invalid or expired token" });
 			}
+			console.log('token valid')
 			req.userId = payload.userId;
 			next();
 		});
@@ -104,8 +104,7 @@ router.post('/signup', async (req, res) => {
 				lastName: user.lastName,
 				firstName: user.firstName,
 				image: user.image,
-				profileSetup: user.profileSetup,
-				color: user.color
+				profileSetup: user.profileSetup
 			}
 		}
 
@@ -189,6 +188,7 @@ router.post('/logout', verifyToken, async (req, res) => {
 router.get('/userinfo', async (req, res) => {
 	try {
 
+
 		const { userId } = req.params;
 
 		//Check if userId is in the body
@@ -198,7 +198,7 @@ router.get('/userinfo', async (req, res) => {
 		}
 
 		//Find
-		const user = User.findById(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not in database'});
 		}
@@ -221,7 +221,7 @@ router.get('/userinfo', async (req, res) => {
 });
 
 //UPDATE USER PROFILE
-router.post('/update-profile', async (req, res) => {
+router.post('/update-profile', verifyToken, async (req, res) => {
 	try{
 
 		if (req.userId == null) {
@@ -234,8 +234,10 @@ router.post('/update-profile', async (req, res) => {
 			return res.status(400).json({message: 'Missing required fields'});
 		}
 
+		console.log(`Updating user profile: id=${req.userId}, firstName=${req.body.firstName}`);
+
 		//find user
-		const user = User.findById(req.userId);
+		const user = await User.findById(req.userId);
 		if (!user) {
 			console.log('Update Info Error: User not in database');
 			return res.status(404).json({message: 'User not in database'});
@@ -244,6 +246,9 @@ router.post('/update-profile', async (req, res) => {
 		user.lastName = req.body.lastName;
 		user.firstName = req.body.firstName;
 		user.color = req.body.color;
+		user.profileSetup = true;
+
+		await user.save();
 
 		const resBody = {
 			id: user._id,

@@ -6,7 +6,7 @@
  */
 
 import express from 'express';
-import User from '../models/User';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -21,13 +21,11 @@ const router = express.Router();
 router.post('/search', async (req, res) => {
 	
 	if (!req.body || !req.body.searchTerm) {
-		res.status(400).json({message: 'Missing search term'});
+		return res.status(400).json({message: 'Missing search term'});
 	}
 
-	//Generate a regular expression for searching
-	const regex = new RegExp(req.body.searchTerm);
+	const searchTerm = req.body.searchTerm;
 
-	return res.status(200).json({message: 'Debug'});
 	const users = await User.find({
 		$or: [
 			{ email: { $regex: searchTerm, $options: 'i' } },
@@ -44,7 +42,7 @@ router.post('/search', async (req, res) => {
 	//loop through results and push to contacts
 	users.forEach(user => {
 		resBody.contacts.push({
-			id: user._id,
+			_id: user._id.toString(),
 			email: user.email,
 			lastName: user.lastName,
 			firstName: user.firstName
@@ -54,5 +52,48 @@ router.post('/search', async (req, res) => {
 	return res.status(200).json(resBody);
 
 });
+
+router.get('/all-contacts', async (req, res) => {
+
+	const users = await User.find({});
+
+	const resBody = {
+		contacts: users.map(user => ({
+			label: user.firstName + ' ' + user.lastName,
+			value: user._id.toString(),
+		}))
+	};
+
+	return res.status(200).json(resBody);
+	
+});
+
+/**
+ * GET /get-contacts-for-list
+ * Retrieves all contacts sorted by their last message timestamp.
+ */
+router.get('/get-contacts-for-list', async (req, res) => {
+
+	// Find all users and sort by lastMessageTime descending (-1)
+	const users = await User.find({}).sort({ lastMessageTime: -1 });
+
+	const resBody = {
+		contacts: users.map(user => ({
+			_id: user._id.toString(),
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			image: user.image,
+			color: user.color,
+			lastMessageTime: user.lastMessageTime
+		}))
+	};
+
+	return res.status(200).json(resBody);
+
+});
+
+
+
 
 export default router;

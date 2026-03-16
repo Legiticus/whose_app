@@ -61,6 +61,9 @@ describe('POST /api/auth/signup', () => {
 			user: {
 				id: expect.any(String),
 				email: 'test@test.com',
+				firstName: '',
+				lastName: '',
+				image: '',
 				profileSetup: false
 			}
 		});

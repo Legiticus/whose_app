@@ -26,31 +26,34 @@ import mongoose from 'mongoose';
  **/
 
 
+//---------TEST SETUP FUNCTIONS-----------//
+
+//connect to virtual database
+//the instance is provided through process.env.MONGO_URL
+beforeAll(async () => {
+	await connectDB(process.env.MONGO_URL);
+});
+
+//disconnect from vitual database after test completion to free resources
+afterAll(async () => {
+	await mongoose.disconnect();
+});
+
+//Before each test, the database is filled
+beforeEach(async () => {
+	await User.create({email: 'lisa@gmail.com', password: 'test', firstName: 'Lisa', lastName: 'June'});
+	await User.create({email: 'random@gmail.com', password: 'test', firstName: 'random', lastName: 'rand'});
+	await User.create({email: 'gregory@gmail.com', password: 'test', firstName: 'Greg', lastName: 'Smith'});
+	await User.create({email: 'lisa2@gmail.com', password: 'test', firstName: 'Lisa', lastName: 'March'});
+	await User.create({email: '35lisa@gmail.com', password: 'test', firstName: 'NotNamed', lastName: 'Not'});
+});
+
+//After each test, the database is cleared
+afterEach(async () => {
+	await User.deleteMany();
+});
+
 describe('POST /api/contacts/search', () => {
-	//connect to virtual database
-	//the instance is provided through process.env.MONGO_URL
-	beforeAll(async () => {
-		await connectDB(process.env.MONGO_URL);
-	});
-
-	//disconnect from vitual database after test completion to free resources
-	afterAll(async () => {
-		await mongoose.disconnect();
-	});
-
-	//Before each test, the database is filled
-	beforeEach(async () => {
-		await User.create({email: 'lisa@gmail.com', password: 'test', firstName: 'Lisa', lastName: 'June'});
-		await User.create({email: 'random@gmail.com', password: 'test', firstName: 'random', lastName: 'rand'});
-		await User.create({email: 'gregory@gmail.com', password: 'test', firstName: 'Greg', lastName: 'Smith'});
-		await User.create({email: 'lisa2@gmail.com', password: 'test', firstName: 'Lisa', lastName: 'March'});
-		await User.create({email: '35lisa@gmail.com', password: 'test', firstName: 'NotNamed', lastName: 'Not'});
-	})
-
-	//After each test, the database is cleared
-	afterEach(async () => {
-		await User.deleteMany();
-	})
 
 	it('should query the database for lisa and requrn the three valid contacts', async () => {
 
@@ -59,25 +62,24 @@ describe('POST /api/contacts/search', () => {
 
 		expect(res.status).toBe(200);
 		expect(res.body).toEqual({
-			message: 'User registered successfully',
 			contacts: [
 				{
-					_id: User.findOne({email: 'lisa@gmail.com'}),
+					_id: expect.any(String),
 					firstName: 'Lisa',
 					lastName: 'June',
 					email: 'lisa@gmail.com'
 				},
 				{
-					_id: User.findOne({email: 'lisa2@gmail.com'}),
+					_id: expect.any(String),
 					firstName: 'Lisa',
 					lastName: 'March',
 					email: 'lisa2@gmail.com'
 				},
 				{
-					_id: User.findOne({email: 'lisa3@gmail.com'}),
+					_id: expect.any(String),
 					firstName: 'NotNamed',
 					lastName: 'Not',
-					email: 'lisa3@gmail.com'
+					email: '35lisa@gmail.com'
 				}
 			]
 		});
@@ -94,4 +96,58 @@ describe('POST /api/contacts/search', () => {
 
 	});
 
+});
+
+
+describe('GET /api/contacts/all-contacts', () => {
+	it('should return 200 and an object with a contacts array on successful request', async () => {
+
+		const res = await request(app).get('/api/contacts/all-contacts');
+
+		expect(res.status).toBe(200);
+
+		expect(res.body.contacts).toEqual([
+			{label: 'Lisa June', value: expect.any(String)},
+			{label: 'random rand', value: expect.any(String)},
+			{label: 'Greg Smith', value: expect.any(String)},
+			{label: 'Lisa March', value: expect.any(String)},
+			{label: 'NotNamed Not', value: expect.any(String)}
+		]);
+	});
+});
+
+
+describe('GET /api/contacts/get-contacts-for-list', () => {
+
+    // Clear and seed with specific timestamps to test sorting
+    beforeEach(async () => {
+        await User.deleteMany({});
+        await User.create([
+            { email: 'old@test.com', password: 'pass', firstName: 'Old', lastName: 'Msg', lastMessageTime: new Date('2025-01-01') },
+            { email: 'new@test.com', password: 'pass', firstName: 'New', lastName: 'Msg', lastMessageTime: new Date('2025-03-01') },
+            { email: 'mid@test.com', password: 'pass', firstName: 'Mid', lastName: 'Msg', lastMessageTime: new Date('2025-02-01') }
+        ]);
+    });
+
+    it('should return 200 and contacts sorted by lastMessageTime (newest first)', async () => {
+        const res = await request(app).get('/api/contacts/get-contacts-for-list');
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.contacts)).toBe(true);
+        expect(res.body.contacts).toHaveLength(3);
+
+        expect(res.body.contacts[0].email).toBe('new@test.com');
+        expect(res.body.contacts[1].email).toBe('mid@test.com');
+        expect(res.body.contacts[2].email).toBe('old@test.com');
+
+        expect(res.body.contacts[0]).toEqual({
+            _id: expect.any(String),
+            firstName: expect.any(String),
+            lastName: expect.any(String),
+            email: expect.any(String),
+            image: expect.any(String),
+            color: expect.any(String),
+            lastMessageTime: expect.any(String) // JSON dates are strings
+        });
+    });
 });

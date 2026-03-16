@@ -6,4 +6,4 @@ const chatSchema = mongoose.Schema({
 	isDeleted: {type: Boolean, default: false}
 }, {timestamps: true});
 
-module.exports = mongoose.model('Chat', chatSchema);
+export default mongoose.model('Chat', chatSchema);

@@ -5,6 +5,9 @@
  * This file contains the connection handler for the socket
  */
 
+import Chat from './models/Chat.js';
+import Message from './models/Message.js';
+
 const socketMap = new Map();
 
 export default function connectionHandler(io, socket) {
@@ -26,8 +29,34 @@ export default function connectionHandler(io, socket) {
         const { sender, recipient, content, messageType = 'text' } = payload;
        	console.log(`"sendMessage event triggered: sender="${sender}", recipitant="${recipient}"`)
  
+
+        //Store in database
+        let chat = await Chat.findOne({
+            participants: {
+                $all: [sender, recipient],
+                $size: 2
+            }
+    
+        });
+    
+        //create a new chat if chat does not exist
+        if (!chat) {
+            console.log(`Creating New DM: sender=${sender} contactor=${recipient}`);
+            chat = await Chat.create({
+                participants: [sender, recipient]
+            });
+        }
+    
+        const msg = await Message.create({
+            chatId: chat._id,
+            senderId: sender,
+            recipients: [recipient],
+            content: content
+        });
+
+
         const messageObject = {
-            id: Date.now(),
+            id: msg._id,
             sender: { id: sender },
             recipient: { id: recipient },
             content,
@@ -35,14 +64,18 @@ export default function connectionHandler(io, socket) {
             timestamp: new Date().toISOString()
         };
 
+
+
+        //Send Websocket messages to recipient and sender
         const recipientSocketId = socketMap.get(recipient);
 
         if (recipientSocketId) {
             io.to(recipientSocketId).emit('receiveMessage', messageObject);
         }
 		
-        // Also emit back to sender
         socket.emit('receiveMessage', messageObject);
+
+
     });
 
     socket.on("disconnect", () => {
