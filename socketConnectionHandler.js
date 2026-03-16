@@ -7,6 +7,7 @@
 
 import Chat from './models/Chat.js';
 import Message from './models/Message.js';
+import User from './models/User.js';
 
 const socketMap = new Map();
 
@@ -14,7 +15,6 @@ export default function connectionHandler(io, socket) {
 
 	//client connects with id as query param
 	const userId = socket.handshake.query.userId;
-	console.log(`Client connected: socketId=${socket.id}, user="${userId}"`);
 
     if (userId) {
         socketMap.set(userId, socket.id);
@@ -27,38 +27,44 @@ export default function connectionHandler(io, socket) {
     socket.on('sendMessage', async (payload) => {
 
         const { sender, recipient, content, messageType = 'text' } = payload;
-       	console.log(`"sendMessage event triggered: sender="${sender}", recipitant="${recipient}"`)
+       	console.log(`"sendMessage event triggered: userId=${userId} sender="${sender}", recipitant="${recipient}"`)
  
+        //Check that sender does not equal recipiant
+        if (userId === recipient) {
+            return;
+        }
 
         //Store in database
         let chat = await Chat.findOne({
             participants: {
-                $all: [sender, recipient],
+                $all: [userId, recipient],
                 $size: 2
             }
-    
         });
     
         //create a new chat if chat does not exist
         if (!chat) {
-            console.log(`Creating New DM: sender=${sender} contactor=${recipient}`);
+            console.log(`Creating New DM: sender=${userId} contactor=${recipient}`);
             chat = await Chat.create({
-                participants: [sender, recipient]
+                participants: [userId, recipient]
             });
         }
     
         const msg = await Message.create({
             chatId: chat._id,
-            senderId: sender,
-            recipients: [recipient],
+            sender: userId,
+            recipient: recipient,
             content: content
         });
 
+        const senderObj = await User.findById(userId);
+        const recipientObject = await User.findById(recipient);
+
 
         const messageObject = {
-            id: msg._id,
-            sender: { id: sender },
-            recipient: { id: recipient },
+            _id: msg._id,
+            sender: senderObj,
+            recipient: recipientObject,
             content,
             messageType,
             timestamp: new Date().toISOString()
@@ -79,7 +85,7 @@ export default function connectionHandler(io, socket) {
     });
 
     socket.on("disconnect", () => {
-        console.log(`Client disconnected: ${userId}`);
+        console.log(`Client disconnected: user=${userId}`);
         socketMap.delete(userId);
     });
 }

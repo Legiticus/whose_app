@@ -50,7 +50,7 @@ export function verifyToken(req, res, next) {
 				console.log("Token Error: invalid or expired token");
 				return res.status(403).json({ message: "Invalid or expired token" });
 			}
-			console.log('token valid')
+			console.log(`Token verified for email: ${payload.email} (ID: ${payload.userId})`);
 			req.userId = payload.userId;
 			next();
 		});
@@ -86,6 +86,8 @@ router.post('/signup', async (req, res) => {
 		});
 
 		//Verify User
+
+		res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
 
 		const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
 
@@ -139,6 +141,9 @@ router.post('/login', async (req, res) => {
 		if (!validPass) {
 			return res.status(400).json({message: "Invalid password"});
 		}
+
+		//Verify user with token
+		res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
 
 		const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
 

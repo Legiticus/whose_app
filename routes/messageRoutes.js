@@ -7,6 +7,7 @@
 
 import express from 'express';
 import {verifyToken} from './authRoutes.js';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Chat from '../models/Chat.js';
 import Message from '../models/Message.js';
@@ -19,14 +20,19 @@ router.post('/get-messages', verifyToken, async (req, res) => {
 		return res.status(400).json({message: 'Missing one or both IDs'});
 	}
 
-	const chatSize = (req.userId === req.body.id) ? 1 : 2;
+	if (req.userId === req.body.id) {
+		console.log(`User attempted to query messages with themselves: userId=${req.userId}, id=${req.body.id}`);
+		return res.status(404).json('Not Found: User attempted to query messages with themselves');
+	}
+
+	const requestor = new mongoose.Types.ObjectId(req.userId);
+	const requestee = new mongoose.Types.ObjectId(req.body.id);
 
 	let chat = await Chat.findOne({
 		participants: {
-			$all: [req.userId, req.body.id],
-			$size: chatSize
+			$all: [requestor, requestee],
+			$size: 2
 		}
-
 	});
 
 	//No chat exists yet
@@ -35,6 +41,10 @@ router.post('/get-messages', verifyToken, async (req, res) => {
 	}
 
 	const messages = await Message.find({chatId: chat._id}).sort({ createdAt: 1 });
+
+	console.log(`Requestor: ${requestor}, Requestee: ${requestee}`);
+	console.log(`ChatID=${chat._id}`);
+	console.log(messages);
 
 	return res.status(200).json({messages});
 
