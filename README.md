@@ -29,22 +29,27 @@ A real-time messaging application built with Node.js and WebSockets.
 └── socketConnectionHandler.js # WebSocket event handling
 ```
 
-## Instalation Steps
+## Installation Steps
 
-Clone the Repository
+### Clone the Repository
 ```bash
 git clone https://github.com
 cd whose_app
 ```
-Install Dependancies
+### Install Dependancies
 ```bash
 npm install
 ```
-Run Client Webserver on Port 3000
+### Link Database
+Create a local or public instance of a mongodb database and paste the link into the .env file
+```bash
+MONGO_URL = <connection link>
+```
+### Run Client Webserver on Port 3000
 ```bash
 npm run client
 ```
-Run Backend on Port 8747
+### Run Backend on Port 8747
 ```bash
 npm run dev
 ```
