@@ -33,7 +33,7 @@ A real-time messaging application built with Node.js and WebSockets.
 
 ### Clone the Repository
 ```bash
-git clone https://github.com
+git clone https://github.com/Legiticus/whose_app.git
 cd whose_app
 ```
 ### Install Dependancies
@@ -43,7 +43,7 @@ npm install
 ### Link Database
 Create a local or public instance of a mongodb database and paste the link into the .env file
 ```bash
-MONGO_URL = <connection link>
+MONGO_URL = <connection link here>
 ```
 ### Run Client Webserver on Port 3000
 ```bash

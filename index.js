@@ -17,6 +17,12 @@ dotenv.config();
 const PORT = process.env.PORT || 8747;
 const MONGO_URL = process.env.MONGO_URL;
 
+if (!MONGO_URL) {
+	console.log('//------------------------------ERROR------------------------------//');
+	console.log('Missing \"MONGO_URL\" in \".env\" file.\n');
+	return -1;
+}
+
 async function startServer() {
 	try {
 		await connectDB(MONGO_URL);
