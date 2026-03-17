@@ -1,1 +1,56 @@
 # WhoseApp
+
+A real-time messaging application built with Node.js and WebSockets.
+
+## Features
+
+*   **Instant Messaging**: Real-time communication powered by Socket.io.
+*   **Structured API**: Organized backend with dedicated models and routes.
+*   **Testing Suite**: Integrated testing environment using Jest.
+*   **Simple Frontend**: Clean, lightweight client-side interface.
+
+## Tech Stack
+
+*   **Runtime**: Node.js
+*   **Communication**: WebSockets (Socket.io)
+*   **Testing**: Jest
+*   **Compiler**: Babel
+*   **Frontend**: HTML, CSS, JavaScript
+
+## Project Structure
+
+```text
+├── client/                 # Frontend assets and UI logic
+├── models/                 # Data schemas and logic
+├── routes/                 # API endpoint definitions
+├── __test__/               # Test suites
+├── app.js                  # Application configuration
+├── index.js                # Server entry point
+└── socketConnectionHandler.js # WebSocket event handling
+```
+
+## Instalation Steps
+
+Clone the Repository
+```bash
+git clone https://github.com
+cd whose_app
+```
+Install Dependancies
+```bash
+npm install
+```
+Run Client Webserver on Port 3000
+```bash
+npm run client
+```
+Run Backend on Port 8747
+```bash
+npm run dev
+```
+
+
+
+
+
+
