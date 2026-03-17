@@ -20,7 +20,7 @@ const MONGO_URL = process.env.MONGO_URL;
 if (!MONGO_URL) {
 	console.log('//------------------------------ERROR------------------------------//');
 	console.log('Missing \"MONGO_URL\" in \".env\" file.\n');
-	return -1;
+	process.exit(1); //Exits the process with failure
 }
 
 async function startServer() {
