@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1773716193784" clover="3.2.0">
-  <project timestamp="1773716193784" name="All files">
-    <metrics statements="141" coveredstatements="124" conditionals="55" coveredconditionals="43" methods="20" coveredmethods="20" elements="216" coveredelements="187" complexity="0" loc="141" ncloc="141" packages="3" files="7" classes="7"/>
+<coverage generated="1773774913678" clover="3.2.0">
+  <project timestamp="1773774913678" name="All files">
+    <metrics statements="140" coveredstatements="123" conditionals="55" coveredconditionals="43" methods="20" coveredmethods="20" elements="215" coveredelements="186" complexity="0" loc="140" ncloc="140" packages="3" files="7" classes="7"/>
     <package name="whose_app_mono">
       <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="app.js" path="C:\Users\lsmit\Desktop\FULL_STACK\whose_app_mono\app.js">
@@ -36,7 +36,7 @@
       </file>
     </package>
     <package name="whose_app_mono.routes">
-      <metrics statements="126" coveredstatements="109" conditionals="55" coveredconditionals="43" methods="18" coveredmethods="18"/>
+      <metrics statements="125" coveredstatements="108" conditionals="55" coveredconditionals="43" methods="18" coveredmethods="18"/>
       <file name="authRoutes.js" path="C:\Users\lsmit\Desktop\FULL_STACK\whose_app_mono\routes\authRoutes.js">
         <metrics statements="76" coveredstatements="59" conditionals="38" coveredconditionals="26" methods="7" coveredmethods="7"/>
         <line num="13" count="3" type="stmt"/>
@@ -153,7 +153,7 @@
         <line num="124" count="1" type="stmt"/>
       </file>
       <file name="messageRoutes.js" path="C:\Users\lsmit\Desktop\FULL_STACK\whose_app_mono\routes\messageRoutes.js">
-        <metrics statements="17" coveredstatements="17" conditionals="9" coveredconditionals="9" methods="1" coveredmethods="1"/>
+        <metrics statements="16" coveredstatements="16" conditionals="9" coveredconditionals="9" methods="1" coveredmethods="1"/>
         <line num="15" count="3" type="stmt"/>
         <line num="17" count="3" type="stmt"/>
         <line num="19" count="4" type="cond" truecount="5" falsecount="0"/>
@@ -169,8 +169,7 @@
         <line num="43" count="1" type="stmt"/>
         <line num="45" count="1" type="stmt"/>
         <line num="46" count="1" type="stmt"/>
-        <line num="47" count="1" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
       </file>
     </package>
   </project>

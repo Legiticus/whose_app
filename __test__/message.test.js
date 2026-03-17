@@ -66,7 +66,7 @@ describe('POST /api/messages/get-messages', () => {
 		//Create valid token to attach to request
 		const requestor = await User.findOne({email: 'User1@test.com'});
 		const payload = {userId: requestor._id, email: requestor.email};
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const requestingUser = await User.findOne({email: 'User1@test.com'});
 		const contact = await User.findOne({email: 'User2@test.com'});
@@ -94,7 +94,7 @@ describe('POST /api/messages/get-messages', () => {
 		// Create valid token to satisfy verifyToken middleware
 		const requestor = await User.findOne({email: 'User1@test.com'});
 		const payload = {userId: requestor._id, email: requestor.email};
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		//Send request with an empty body (missing 'id')
 		const res = await request(app)
@@ -113,7 +113,7 @@ describe('POST /api/messages/get-messages', () => {
 		// Create valid token for User1
 		const requestor = await User.findOne({email: 'User1@test.com'});
 		const payload = {userId: requestor._id, email: requestor.email};
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		//Send request where 'id' in body matches the 'userId' in the token
 		const res = await request(app)
@@ -132,7 +132,7 @@ describe('POST /api/messages/get-messages', () => {
 		const contact = await User.findOne({email: 'User4@test.com'});
 		
 		const payload = {userId: requestor._id, email: requestor.email};
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		// Act: Request messages with a user who has no history with the requestor
 		const res = await request(app)
