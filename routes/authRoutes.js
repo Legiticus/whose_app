@@ -65,112 +65,98 @@ export function verifyToken(req, res, next) {
 //SIGNUP
 router.post('/signup', async (req, res) => {
 
-	try {
-
-		if (!req.body || !req.body.email || !req.body.password ) {
-			return res.status(400).json({message: "Email and password required"});
-		}
-
-		const {email, password} = req.body
-
-		//Hash password before sending to database
-		const hashedPass = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS, 10));;
-
-		if (await User.findOne({email})) {
-			return res.status(409).json({message: "Email already registered"});
-		}
-
-		const user = await User.create({
-			email,
-			password: hashedPass
-		});
-
-		//Verify User
-		res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
-
-		const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
-
-		res.cookie('jwt', token, {
-			secure: true, // Ensures that the cookie is only sent over HTTPS (important in production but often ignored over local host)
-			sameSite: "None", // Allows for cross-origin cookies when using credentials
-			maxAge: 60*60*1000 // Expires in 1h
-		});
-
-		//Create respose body and send response
-		const resBody = {
-			message: 'User registered successfully',
-			user: {
-				id: user._id,
-				email: user.email,
-				lastName: user.lastName,
-				firstName: user.firstName,
-				image: user.image,
-				profileSetup: user.profileSetup
-			}
-		}
-
-		res.status(201).json(resBody);
-	
-
-	}catch (error) {
-		console.error('Signup Error:', error);
-		res.status(500).json({message: 'Internal Server Error'});
+	if (!req.body || !req.body.email || !req.body.password ) {
+		return res.status(400).json({message: "Email and password required"});
 	}
+
+	const {email, password} = req.body
+
+	//Hash password before sending to database
+	const hashedPass = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS, 10));;
+
+	if (await User.findOne({email})) {
+		return res.status(409).json({message: "Email already registered"});
+	}
+
+	const user = await User.create({
+		email,
+		password: hashedPass
+	});
+
+	//Verify User
+	res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
+
+	const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
+
+	res.cookie('jwt', token, {
+		secure: true, // Ensures that the cookie is only sent over HTTPS (important in production but often ignored over local host)
+		sameSite: "None", // Allows for cross-origin cookies when using credentials
+		maxAge: 60*60*1000 // Expires in 1h
+	});
+
+	//Create respose body and send response
+	const resBody = {
+		message: 'User registered successfully',
+		user: {
+			id: user._id,
+			email: user.email,
+			lastName: user.lastName,
+			firstName: user.firstName,
+			image: user.image,
+			profileSetup: user.profileSetup
+		}
+	}
+
+	res.status(201).json(resBody);
+
 });
 
 //LOGIN
 router.post('/login', async (req, res) => {
 
-	try {
-
-		if (!req.body || !req.body.email || !req.body.password ) {
-			return res.status(400).json({message: "Email and password required"});
-		}
-
-		const {email, password} = req.body;
-
-		const user = await User.findOne({email});
-
-		if (!(user)) {
-			return res.status(404).json({message: "No user found with the given email"});
-		}
-
-		const validPass = await bcrypt.compare(password, user.password);
-
-		if (!validPass) {
-			return res.status(400).json({message: "Invalid password"});
-		}
-
-		//Verify user with token
-		res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
-
-		const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
-
-		res.cookie("jwt", token, {
-			secure: true, // Ensures the cookie is only sent over HTTPS (important in production but often ignored over local host)
-			sameSite: "None", // Allows cross-origin cookies when using credentials
-			maxAge: 60 * 60 * 1000, // 1 hour expiration
-		})
-
-		const resBody = {
-			message: 'User login successful',
-			user: {
-				id: user._id,
-				email: user.email,
-				lastName: user.lastName,
-				firstName: user.firstName,
-				image: user.image,
-				profileSetup: user.profileSetup,
-				color: user.color
-			}
-		}
-
-		res.status(200).json(resBody);
-	
-	}catch (error) {
-		console.error('Login Error:', error);
-		res.status(500).json({message: 'Internal Server Error'});
+	if (!req.body || !req.body.email || !req.body.password ) {
+		return res.status(400).json({message: "Email and password required"});
 	}
+
+	const {email, password} = req.body;
+
+	const user = await User.findOne({email});
+
+	if (!(user)) {
+		return res.status(404).json({message: "No user found with the given email"});
+	}
+
+	const validPass = await bcrypt.compare(password, user.password);
+
+	if (!validPass) {
+		return res.status(400).json({message: "Invalid password"});
+	}
+
+	//Verify user with token
+	res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
+
+	const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
+
+	res.cookie("jwt", token, {
+		secure: true, // Ensures the cookie is only sent over HTTPS (important in production but often ignored over local host)
+		sameSite: "None", // Allows cross-origin cookies when using credentials
+		maxAge: 60 * 60 * 1000, // 1 hour expiration
+	})
+
+	const resBody = {
+		message: 'User login successful',
+		user: {
+			id: user._id,
+			email: user.email,
+			lastName: user.lastName,
+			firstName: user.firstName,
+			image: user.image,
+			profileSetup: user.profileSetup,
+			color: user.color
+		}
+	}
+
+	res.status(200).json(resBody);
 
 });
 

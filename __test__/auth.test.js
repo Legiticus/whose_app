@@ -112,7 +112,8 @@ describe('Authentication Routes', () => {
 
         beforeEach(async () => {
 			const tester = await request(app).post('/api/auth/signup').send(testUser);
-			const payload = {userId: tester._id, email: tester.email};
+			const payload = {userId: tester.body.user.id, email: tester.body.email};
+			console.log(payload);
 			token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
         });
 

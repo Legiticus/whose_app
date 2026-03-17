@@ -44,7 +44,6 @@ router.post('/get-messages', verifyToken, async (req, res) => {
 
 	console.log(`Requestor: ${requestor}, Requestee: ${requestee}`);
 	console.log(`ChatID=${chat._id}`);
-	console.log(messages);
 
 	return res.status(200).json({messages});
 

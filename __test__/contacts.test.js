@@ -68,7 +68,7 @@ describe('POST /api/contacts/search', () => {
 		//Create valid token to attach to request
 		const lisa = await User.findOne({ email: 'lisa@gmail.com' });
 		const payload = { userId: lisa._id, email: lisa.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const res = await request(app).post('/api/contacts/search')
 			.send({ searchTerm: 'lisa' })
@@ -101,7 +101,7 @@ describe('POST /api/contacts/search', () => {
 		//Create valid token to attach to request
 		const lisa = await User.findOne({ email: 'lisa@gmail.com' });
 		const payload = { userId: lisa._id, email: lisa.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const res = await request(app)
 			.post('/api/contacts/search')
@@ -121,7 +121,7 @@ describe('GET /api/contacts/all-contacts', () => {
 		//Create valid token to attach to request
 		const lisa = await User.findOne({ email: 'lisa@gmail.com' });
 		const payload = { userId: lisa._id, email: lisa.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const res = await request(app)
 			.get('/api/contacts/all-contacts')
@@ -157,7 +157,7 @@ describe('GET /api/contacts/get-contacts-for-list', () => {
 		//Create valid token to attach to request
 		const requestor = await User.findOne({ email: 'requestor@test.com' });
 		const payload = { userId: requestor._id, email: requestor.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const res = await request(app)
 			.get('/api/contacts/get-contacts-for-list')
@@ -198,7 +198,7 @@ describe('DELETE /api/contacts/delete-dm/:dmId', () => {
 
 		//Add token to request and send request to delete dm from lisa
 		const payload = { userId: lisa._id, email: lisa.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		const response = await request(app)
 			.delete(`/api/contacts/delete-dm/${lisa2._id}`)
@@ -217,7 +217,7 @@ describe('DELETE /api/contacts/delete-dm/:dmId', () => {
 		//Add token to request and send request to delete dm from lisa
 		const lisa = await User.findOne({ email: 'lisa@gmail.com' });
 		const payload = { userId: lisa._id, email: lisa.email };
-		const token = jwt.sign(payload, process.env.SECRET_KEY);
+		const token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
 
 		//Send a valid format but non existing id to the request
 		const badId = new mongoose.Types.ObjectId().toString();
@@ -234,7 +234,7 @@ describe('DELETE /api/contacts/delete-dm/:dmId', () => {
 		const lisa = await User.findOne({ email: 'lisa@gmail.com' });
 		const randomId = await User.findOne({ email: 'random@gmail.com'});
 
-		const token = jwt.sign({ userId: lisa._id, email: lisa.email }, process.env.SECRET_KEY);
+		const token = jwt.sign({ userId: lisa._id, email: lisa.email }, process.env.SECRET_KEY || 'Testkey');
 
 		const response = await request(app)
 			.delete(`/api/contacts/delete-dm/${randomId._id}`)
