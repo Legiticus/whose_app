@@ -20,13 +20,13 @@ A real-time messaging application built with Node.js and WebSockets.
 ## Project Structure
 
 ```text
+├── __test__/               # Test suites
 ├── client/                 # Frontend assets and UI logic
 ├── models/                 # Data schemas and logic
 ├── routes/                 # API endpoint definitions
-├── __test__/               # Test suites
+├── sockets/				# WebSocket event handling
 ├── app.js                  # Application configuration
-├── index.js                # Server entry point
-└── socketConnectionHandler.js # WebSocket event handling
+└── index.js                # Server entry point
 ```
 
 ## Installation Steps
