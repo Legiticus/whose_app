@@ -5,9 +5,9 @@
  * This file contains the connection handler for the socket
  */
 
-import Chat from './models/Chat.js';
-import Message from './models/Message.js';
-import User from './models/User.js';
+import Chat from '../models/Chat.js';
+import Message from '../models/Message.js';
+import User from '../models/User.js';
 
 const socketMap = new Map();
 

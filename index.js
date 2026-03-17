@@ -10,7 +10,7 @@ import {app, connectDB} from './app.js'
 import { Server } from 'socket.io';
 
 //Socket Imports
-import socketConnectionHandler from './socketConnectionHandler.js';
+import socketConnectionHandler from './sockets/socketConnectionHandler.js';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const MONGO_URL = process.env.MONGO_URL;
 
 async function startServer() {
 	try {
-		await connectDB(process.env.MONGO_URL);
+		await connectDB(MONGO_URL);
 		console.log('Connected to database')
 		const server = app.listen(PORT, () => {
 			console.log(`Server running on port ${PORT}`);
