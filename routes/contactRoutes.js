@@ -6,8 +6,12 @@
  */
 
 import express from 'express';
-import User from '../models/User.js';
 import { verifyToken } from './authRoutes.js';
+
+//Models
+import User from '../models/User.js';
+import Message from '../models/Message.js';
+import Chat from '../models/Chat.js';
 
 const router = express.Router();
 
@@ -73,10 +77,6 @@ router.get('/all-contacts', verifyToken, async (req, res) => {
  */
 router.get('/get-contacts-for-list', verifyToken, async (req, res) => {
 
-	if (req.userId == null) {
-		return res.status(400).json({message: 'userId not found'});
-	}
-
 	// Find all users and sort by lastMessageTime descending (-1)
 	const users = await User.find({}).sort({ lastMessageTime: -1 });
 
@@ -98,7 +98,32 @@ router.get('/get-contacts-for-list', verifyToken, async (req, res) => {
 
 });
 
+router.delete('/delete-dm/:dmId', verifyToken, async (req, res) => {
 
+	const dmId = req.params.dmId;
+	const recipient = await User.findById(dmId);
+
+	if (!recipient) {
+		return res.status(400).json({message: 'Missing or invalid dmId'});
+	}
+
+	const chat = await Chat.findOne({
+		participants: {
+			$all: [req.userId, dmId],
+			$size: 2
+		}
+	});
+
+	if (!chat) {
+		return res.status(400).json({message: 'Chat does not exist'});
+	}
+
+	await Message.deleteMany({ chatId: chat._id});
+	await Chat.findByIdAndDelete(chat._id);
+
+	return res.status(200).json({message: 'DM deleted successfully'});
+
+});
 
 
 export default router;

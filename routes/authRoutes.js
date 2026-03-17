@@ -86,7 +86,6 @@ router.post('/signup', async (req, res) => {
 		});
 
 		//Verify User
-
 		res.clearCookie("jwt", { secure: true, sameSite: "None" }); // Clear old first
 
 		const token = jwt.sign({email, userId: user._id}, process.env.SECRET_KEY || 'Testkey', {expiresIn: "1h"});
@@ -177,101 +176,83 @@ router.post('/login', async (req, res) => {
 
 //LOGOUT
 router.post('/logout', verifyToken, async (req, res) => {
-	try {
-		res.clearCookie('jwt', {
-			secure: true,
-			sameSite: "None"
-		});
-		return res.status(200).json('Logout successful');
-	} catch (error) {
-		console.log('Logout Error: ', error);
-		return res.status(500).json({message: 'Internal Server Error'});
-	}
+	res.clearCookie('jwt', {
+		secure: true,
+		sameSite: "None"
+	});
+	return res.status(200).json('Logout successful');
 });
 
 //GET USER INFO
-router.get('/userinfo', async (req, res) => {
-	try {
+router.get('/userinfo', verifyToken, async (req, res) => {
 
-
-		const { userId } = req.params;
-
-		//Check if userId is in the body
-		if (req.userId == null) {
-			console.log('Get Info Error: UserID not in token');
-			return res.status(404).json({message: 'UserID not in token'});
-		}
-
-		//Find
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({message: 'User not in database'});
-		}
-		const resBody = {
-			id: user._id,
-			email: user.email,
-			lastName: user.lastName,
-			firstName: user.firstName,
-			image: user.image,
-			profileSetup: user.profileSetup,
-			color: user.color
-		}
-
-		return res.status(200).json(resBody);
-
-	} catch (error) {
-		console.log('Get Info Error: ', error);
-		return res.status(500).json({message: 'Internal Server Error'});
+	//Check if userId is in the body
+	if (req.userId == null) {
+		console.log('Get Info Error: UserID not in token');
+		return res.status(404).json({message: 'UserID not in token'});
 	}
+
+	//Find
+	const user = await User.findById(req.userId);
+	if (!user) {
+		return res.status(404).json({message: 'User not in database'});
+	}
+	const resBody = {
+		id: user._id,
+		email: user.email,
+		lastName: user.lastName,
+		firstName: user.firstName,
+		image: user.image,
+		profileSetup: user.profileSetup,
+		color: user.color
+	}
+
+	return res.status(200).json(resBody);
+
 });
 
 //UPDATE USER PROFILE
 router.post('/update-profile', verifyToken, async (req, res) => {
-	try{
 
-		if (req.userId == null) {
-			console.log('Update Profile Error: UserID not in token');
-			return res.status(400).json({message: 'UserID not in token'});
-		}
-
-		if ( req.body.lastName == null || req.body.firstName == null) {
-			console.log('Update Profile Error: User failed to provide all info for required fields');
-			return res.status(400).json({message: 'Missing required fields'});
-		}
-
-		console.log(`Updating user profile: id=${req.userId}, firstName=${req.body.firstName}`);
-
-		//find user
-		const user = await User.findById(req.userId);
-		if (!user) {
-			console.log('Update Info Error: User not in database');
-			return res.status(404).json({message: 'User not in database'});
-		}
-
-		user.lastName = req.body.lastName;
-		user.firstName = req.body.firstName;
-		user.color = req.body.color;
-		user.profileSetup = true;
-
-		await user.save();
-
-		const resBody = {
-			id: user._id,
-			email: user.email,
-			lastName: user.lastName,
-			firstName: user.firstName,
-			image: user.image,
-			profileSetup: user.profileSetup,
-			color: user.color,
-			message: 'User profile updated successfully'
-		}
-
-		return res.status(200).json(resBody);
-
-	} catch (error) {
-		console.log('Update Profile Error: ', error);
-		return res.status(500).json({message: 'Internal Server Error'});
+	if (req.userId == null) {
+		console.log('Update Profile Error: UserID not in token');
+		return res.status(400).json({message: 'UserID not in token'});
 	}
-})
+
+	if ( req.body.lastName == null || req.body.firstName == null) {
+		console.log('Update Profile Error: User failed to provide all info for required fields');
+		return res.status(400).json({message: 'Missing required fields'});
+	}
+
+	console.log(`Updating user profile: id=${req.userId}, firstName=${req.body.firstName}`);
+
+	//find user
+	const user = await User.findById(req.userId);
+	if (!user) {
+		console.log('Update Info Error: User not in database');
+		return res.status(404).json({message: 'User not in database'});
+	}
+
+	user.lastName = req.body.lastName;
+	user.firstName = req.body.firstName;
+	user.color = req.body.color;
+	user.profileSetup = true;
+
+	await user.save();
+
+	const resBody = {
+		id: user._id,
+		email: user.email,
+		lastName: user.lastName,
+		firstName: user.firstName,
+		image: user.image,
+		profileSetup: user.profileSetup,
+		color: user.color,
+		message: 'User profile updated successfully'
+	}
+
+	return res.status(200).json(resBody);
+
+});
 
 export default router;

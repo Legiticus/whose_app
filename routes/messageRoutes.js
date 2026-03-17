@@ -22,7 +22,7 @@ router.post('/get-messages', verifyToken, async (req, res) => {
 
 	if (req.userId === req.body.id) {
 		console.log(`User attempted to query messages with themselves: userId=${req.userId}, id=${req.body.id}`);
-		return res.status(404).json('Not Found: User attempted to query messages with themselves');
+		return res.status(403).json('Forbidden: User attempted to query messages with themselves');
 	}
 
 	const requestor = new mongoose.Types.ObjectId(req.userId);
