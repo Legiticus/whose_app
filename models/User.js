@@ -1,3 +1,11 @@
+/**
+ * @file User.js
+ * @author Levi Smith
+ * 
+ * Provides the schema for application users
+ */
+
+
 import mongoose from 'mongoose';
 
 //User Schema
@@ -9,7 +17,7 @@ const userSchema = new mongoose.Schema({
 	image: {type: String, default: ''},
 	profileSetup: {type: Boolean, default: false},
 	color: {type: String, default: ''},
-	lastMessageTime: {type: Date, default: Date.now}
+	lastMessageTime: {type: Date, default: ''}
 
 }, {timestamps: true});
 

@@ -1,3 +1,10 @@
+/**
+ * @file ChannelMessage.js
+ * @author Levi Smith
+ * 
+ * Provides the schema for channel messages
+ */
+
 import mongoose from 'mongoose';
 
 const channelMessageSchema = mongoose.Schema({

@@ -1,3 +1,11 @@
+/**
+ * @file Message.js
+ * @author Levi Smith
+ * 
+ * Provides the schema for direct messages
+ */
+
+
 import mongoose from 'mongoose';
 
 const messageSchema = mongoose.Schema({
