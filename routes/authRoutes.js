@@ -36,28 +36,23 @@ const router = express.Router();
  * - If valid, extracts `userId` from the payload and attaches it to `req.userId`.
  */
 export function verifyToken(req, res, next) {
-	try {
-		console.log('verifying requestors token');
-		const token = req.cookies.jwt;
-  		if (!token) {
-			console.log('token not found');
-			return res.status(401).json({ message: "Not authenticated" });
-		} 
-
-		jwt.verify(token, process.env.SECRET_KEY || 'Testkey', (err, payload) => {
-			console.log('checking for token error')
-			if (err) {
-				console.log("Token Error: invalid or expired token");
-				return res.status(403).json({ message: "Invalid or expired token" });
-			}
-			console.log(`Token verified for email: ${payload.email} (ID: ${payload.userId})`);
-			req.userId = payload.userId;
-			next();
-		});
-	}catch (error) {
-		console.log("Error verifying token: ", error);
-		return res.status(500).json({message: 'Internal Server Error'});
+	console.log('verifying requestors token');
+	const token = req.cookies.jwt;
+	if (!token) {
+		console.log('token not found');
+		return res.status(401).json({ message: "Not authenticated" });
 	}
+
+	jwt.verify(token, process.env.SECRET_KEY || 'Testkey', (err, payload) => {
+		console.log('checking for token error')
+		if (err) {
+			console.log("Token Error: invalid or expired token");
+			return res.status(403).json({ message: "Invalid or expired token" });
+		}
+		console.log(`Token verified for email: ${payload.email} (ID: ${payload.userId})`);
+		req.userId = payload.userId;
+		next();
+	});
 }
 
 

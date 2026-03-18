@@ -53,6 +53,27 @@ describe('Authentication Routes', () => {
         password: 'password123'
     };
 
+    describe('Verifaction Tests', () => {
+
+        it('should return 401 for token not found', async () => {
+            //request to get user id while not authenticated
+            const res = await request(app).get('/api/auth/userinfo');
+
+            expect(res.status).toBe(401);
+            expect(res.body.message).toBe('Not authenticated');
+        });
+        
+        it('should return 403 for invalid token', async () => {
+            //request to get user id while not authenticated
+            const res = await request(app).get('/api/auth/userinfo').set('Cookie', 'jwt=badtoken');
+
+            expect(res.status).toBe(403);
+            expect(res.body.message).toBe('Invalid or expired token');
+
+        });
+
+    });
+
     describe('POST /signup', () => {
         it('should register a new user and return a 201 status', async () => {
             const res = await request(app)
@@ -105,16 +126,44 @@ describe('Authentication Routes', () => {
 
             expect(res.statusCode).toEqual(400);
         });
+
+        it('should return 400 for missing email or password', async () => {
+            let res = await request(app)
+                .post('/api/auth/login')
+                .send({ email: testUser.email });
+
+            expect(res.statusCode).toEqual(400);
+
+            res = await request(app)
+                .post('/api/auth/login')
+                .send({  password: 'password' });
+
+            expect(res.statusCode).toEqual(400);
+        })
+
+        it('should return 404 for no user with given email', async () => {
+            const res = await request(app)
+                .post('/api/auth/login')
+                .send({ email: 'email does not exist', password: 'password' });
+
+            expect(res.statusCode).toEqual(404);
+        });;
     });
 
     describe('Authenticated Routes', () => {
         let token;
+        let badtoken;
+        let userlesstoken;
 
         beforeEach(async () => {
 			const tester = await request(app).post('/api/auth/signup').send(testUser);
-			const payload = {userId: tester.body.user.id, email: tester.body.email};
-			console.log(payload);
+			let payload = {userId: tester.body.user.id, email: tester.body.email};
 			token = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
+
+            badtoken = jwt.sign({}, process.env.SECRET_KEY || 'Testkey');
+
+            payload = {userId: new mongoose.Types.ObjectId().toString(), email: 'bademail'}
+            userlesstoken = jwt.sign(payload, process.env.SECRET_KEY || 'Testkey');
         });
 
         it('POST /update-profile - should update user profile fields', async () => {
@@ -124,7 +173,7 @@ describe('Authentication Routes', () => {
                 color: 'blue'
             };
 
-            const res = await request(app)
+            let res = await request(app)
                 .post('/api/auth/update-profile')
                 .set('Cookie', `jwt=${token}`)
                 .send(updateData);
@@ -132,19 +181,75 @@ describe('Authentication Routes', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body.firstName).toBe('FirstNameTest');
             expect(res.body.profileSetup).toBe(true);
+            
+            //check for bad token
+            res = await request(app)
+                .post('/api/auth/update-profile')
+                .set('Cookie', `jwt=${badtoken}`)
+                .send(updateData);
+
+            expect(res.statusCode).toEqual(400);
+        });
+
+        it('POST /update-profile - should return 400 for missing required fields', async () => {
+            const updateData = {
+                firstName: 'FirstNameTest',
+                color: 'blue'
+            };
+
+            let res = await request(app)
+                .post('/api/auth/update-profile')
+                .set('Cookie', `jwt=${token}`)
+                .send(updateData);
+
+            expect(res.statusCode).toEqual(400);
+            
+        });
+
+        it('POST /update-profile - should return 404 for user not in database', async () => {
+            const updateData = {
+                firstName: 'FirstNameTest',
+                lastName: 'LastNameTest',
+                color: 'blue'
+            };
+
+            let res = await request(app)
+                .post('/api/auth/update-profile')
+                .set('Cookie', `jwt=${userlesstoken}`)
+                .send(updateData);
+
+            expect(res.statusCode).toEqual(404);
+            
         });
 
         it('GET /userinfo - should return user data when authenticated', async () => {
-            const res = await request(app)
+            let res = await request(app)
                 .get('/api/auth/userinfo')
                 .set('Cookie', `jwt=${token}`);
 
             expect(res.statusCode).toEqual(200);
             expect(res.body.email).toBe(testUser.email);
+
+        });
+
+        it('GET /userinfo - should return 404 for user not in database or invalid token', async () => {
+            let res = await request(app)
+                .get('/api/auth/userinfo')
+                .set('Cookie', `jwt=${userlesstoken}`);
+
+            expect(res.statusCode).toEqual(404);
+            
+            //check for bad token
+            res = await request(app)
+                .get('/api/auth/userinfo')
+                .set('Cookie', `jwt=${badtoken}`)
+
+            expect(res.statusCode).toEqual(404);
+
         });
 
         it('POST /logout - should clear the cookie', async () => {
-            const res = await request(app)
+            let res = await request(app)
                 .post('/api/auth/logout')
                 .set('Cookie', `jwt=${token}`);
 
